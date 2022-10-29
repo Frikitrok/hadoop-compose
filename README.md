@@ -3,4 +3,7 @@ docker-compose down
 docker-compose stop
 docker-compose start
 
-docker exec -it datanode bash
+docker exec -it namenode bash
+alias h="hadoop fs"
+
+h -mkdir /test
