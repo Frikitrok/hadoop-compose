@@ -1,3 +1,4 @@
+```
 docker-compose up -d
 docker-compose down
 docker-compose stop
@@ -14,3 +15,4 @@ h -ls /test/user/
 h -cat /test/user/file.txt
 h -rm /test/user/file.txt
 h -ls /test/user/
+```
