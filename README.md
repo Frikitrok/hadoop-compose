@@ -8,6 +8,7 @@ docker exec -it namenode bash
 
 alias h="hadoop fs"
 
+h –help
 h -mkdir -p /test/user
 echo "test word" > file.txt
 h -put file.txt /test/user/file.txt
