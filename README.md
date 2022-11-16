@@ -52,19 +52,30 @@ hbase shell
 status
 version
 
-
 # Use the create command to create a new table. You must specify the table name and the ColumnFamily name.
 create 'test', 'cf'
 list 'test'
 describe 'test'
+
+# Populate data
 put 'test', 'row1', 'cf:a', 'value1'
 put 'test', 'row2', 'cf:b', 'value2'
 put 'test', 'row3', 'cf:c', 'value3'
 scan 'test'
-get 'test', 'row1'
+
+# Drop row
+delete 'test', 'row2', 'cf:b'
+deleteall 'test', 'row1'
+
+# Update data
+put 'test', 'row2', 'cf:b', 'value5'
+
+# Get data
+scan 'test',  {TIMERANGE => [1668619944913, 1668619944914]}
+get 'test', 'row2'
+
+# Delete table
 disable 'test'
 enable 'test'
 drop 'test'
-deleteall 'test', 'row1'
-delete 'test', 'row2', 'cf:b'
 ```
