@@ -79,3 +79,67 @@ disable 'test'
 enable 'test'
 drop 'test'
 ```
+
+lab 6
+```
+docker exec -it namenode bash
+
+cat << 'EOF' > sales.csv
+Dallas,Sam,30000
+Dallas,Fred,40000
+Dallas,Jane,20000
+Houston,Jim,75000
+Houston,Bob,65000
+New York,Earl,40000
+EOF
+
+cat << 'EOF' > position.csv
+Sam,officer
+Fred,firefighter
+Jane,cashier
+Jim,cashier
+Bob,nurse
+Earl,officer
+EOF
+
+alias h="hadoop fs"
+h -put sales.csv  /
+h -put position.csv  /
+
+mkdir -p /opt/pig
+cd /opt/pig
+curl -L -o pig-0.17.0.tar.gz https://archive.apache.org/dist/pig/pig-0.17.0/pig-0.17.0.tar.gz
+tar xvzf pig-0.17.0.tar.gz -C /opt/pig
+mv pig-0.17.0/* ./
+
+export PIG_HOME=/opt/pig
+export PATH=$PATH:$PIG_HOME/bin
+export PIG_CLASSPATH=/etc/hadoop/
+export PIG_CONF_DIR=$PIG_HOME/conf
+
+pig
+# load data to relation (dataset)
+a = LOAD '/sales.csv' USING PigStorage(',') AS (shop:chararray,employee:chararray,sales:int);
+q = LOAD '/position.csv' USING PigStorage(',') AS (name:chararray,position:chararray);
+
+# show dataset
+dump a
+# get info on dataset
+describe a
+explain a
+illustrate a
+# filter
+x = filter a by sales > 40000;
+# group by shop
+b = GROUP a BY shop;
+# sort
+c = ORDER a BY sales ASC;
+# limit
+d = LIMIT a 2;
+# join
+join_result = JOIN a BY employee, q BY name;
+# union
+union_result = UNION a, q;
+# split
+SPLIT a into rich if sales > 40000, poor if sales <= 40000;
+```
