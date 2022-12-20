@@ -28,6 +28,8 @@ cd /tmp
 curl -L -o purchases.txt.gz http://content.udacity-data.com/courses/ud617/purchases.txt.gz
 gzip -d purchases.txt.gz
 alias h="hadoop fs"
+h -mkdir /test
+h -mkdir /test/user/
 h -put purchases.txt /test/user/
 h -ls /test/user/
 
@@ -142,4 +144,43 @@ join_result = JOIN a BY employee, q BY name;
 union_result = UNION a, q;
 # split
 SPLIT a into rich if sales > 40000, poor if sales <= 40000;
+```
+
+Lab 7
+```
+docker-compose -f hive-docker-compose.yaml up -d
+docker exec -it hadoop-compose-hive-server-1 bash
+cd /hive-data
+
+# create db and table with formatting
+hive -f employee_table.hql
+hive -f employee_table_2.hql
+hive -f employee_rises_table.hql
+# populate scv data to table
+hadoop fs -put employee.csv hdfs://namenode:8020/user/hive/warehouse/testdb.db/employee
+hadoop fs -put employee_2.csv hdfs://namenode:8020/user/hive/warehouse/testdb.db/employee_2
+hadoop fs -put employee_rises.csv hdfs://namenode:8020/user/hive/warehouse/testdb.db/employee_rises
+
+hive
+show databases;
+use testdb;
+select * from employee;
+select * from employee_rises;
+select * from testdb.employee where age>=30;
+
+# join
+SELECT c.eid, c.ename, o.date_of_rise
+FROM employee c
+LEFT OUTER JOIN employee_rises o
+ON (c.eid = o.eid);
+
+# sort
+select * from testdb.employee SORT BY salary ASC;
+# group
+select storelocation, count(*) from testdb.employee GROUP BY storelocation;
+
+# union
+SELECT * FROM employee
+UNION
+SELECT * FROM employee_2;
 ```
